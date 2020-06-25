@@ -248,6 +248,8 @@ public interface BeanFactory {
 	 * will be able to obtain an instance for the same name.
 	 * @param name the name of the bean to query
 	 * @return whether a bean with the given name is present
+	 *
+	 * 判断容器是否含有指定名字的bean
 	 */
 	boolean containsBean(String name);
 
@@ -265,6 +267,8 @@ public interface BeanFactory {
 	 * @throws NoSuchBeanDefinitionException if there is no bean with the given name
 	 * @see #getBean
 	 * @see #isPrototype
+	 *
+	 * 判断bean是否为singleton类型的bean
 	 */
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
@@ -283,6 +287,8 @@ public interface BeanFactory {
 	 * @since 2.0.3
 	 * @see #getBean
 	 * @see #isSingleton
+	 *
+	 * 判断bean是否为prototype类型的bean
 	 */
 	boolean isPrototype(String name) throws NoSuchBeanDefinitionException;
 
@@ -317,6 +323,8 @@ public interface BeanFactory {
 	 * @since 2.0.1
 	 * @see #getBean
 	 * @see #getType
+	 *
+	 * 查询指定了名字的bean的class类型是否是指定的class类型，class类型可以由用户指定
 	 */
 	boolean isTypeMatch(String name, Class<?> typeToMatch) throws NoSuchBeanDefinitionException;
 
@@ -334,6 +342,8 @@ public interface BeanFactory {
 	 * @since 1.1.2
 	 * @see #getBean
 	 * @see #isTypeMatch
+	 *
+	 * 查询指定名字bean的class类型
 	 */
 	@Nullable
 	Class<?> getType(String name) throws NoSuchBeanDefinitionException;
@@ -369,6 +379,8 @@ public interface BeanFactory {
 	 * @param name the bean name to check for aliases
 	 * @return the aliases, or an empty array if none
 	 * @see #getBean
+	 *
+	 * 查询指定名字bean的所有别名，这些别名都是用户在beandefinition中定义的
 	 */
 	String[] getAliases(String name);
 

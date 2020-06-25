@@ -80,6 +80,9 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * from the given XML file and automatically refreshing the context.
 	 * @param configLocation file path
 	 * @throws BeansException if context creation failed
+	 *
+	 *
+	 * 包含的是beandefinition所在的文件路径
 	 */
 	public FileSystemXmlApplicationContext(String configLocation) throws BeansException {
 		this(new String[] {configLocation}, true, null);
@@ -102,6 +105,9 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param configLocations array of file paths
 	 * @param parent the parent context
 	 * @throws BeansException if context creation failed
+	 *
+	 *
+	 * 指定自己的双拳ioc容器
 	 */
 	public FileSystemXmlApplicationContext(String[] configLocations, ApplicationContext parent) throws BeansException {
 		this(configLocations, true, parent);
@@ -139,6 +145,7 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 		super(parent);
 		setConfigLocations(configLocations);
 		if (refresh) {
+			//容器初始化，载入beandefinition
 			refresh();
 		}
 	}
@@ -152,6 +159,8 @@ public class FileSystemXmlApplicationContext extends AbstractXmlApplicationConte
 	 * @param path the path to the resource
 	 * @return the Resource handle
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#getResourceByPath
+	 *
+	 * 实现DefaultResourceLoader 的getResourceByPath方法，完成beandefinition的定位
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {

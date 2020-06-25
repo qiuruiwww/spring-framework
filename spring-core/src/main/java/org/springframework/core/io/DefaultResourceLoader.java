@@ -140,6 +140,13 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 资源文件定位
+	 * @Date 16:02 2020/6/25
+	 * @Param [location]
+	 * @return org.springframework.core.io.Resource
+	 **/
 	@Override
 	public Resource getResource(String location) {
 		Assert.notNull(location, "Location must not be null");
@@ -154,17 +161,20 @@ public class DefaultResourceLoader implements ResourceLoader {
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		}
+		//带有classpath标识的resource处理
 		else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		}
 		else {
 			try {
 				// Try to parse the location as a URL...
+				//这里是带有url标识的resource定位处理
 				URL url = new URL(location);
 				return (ResourceUtils.isFileURL(url) ? new FileUrlResource(url) : new UrlResource(url));
 			}
 			catch (MalformedURLException ex) {
 				// No URL -> resolve as resource path.
+				//既不是classpath也不是url标识的resource定位，则交给子类去实现
 				return getResourceByPath(location);
 			}
 		}

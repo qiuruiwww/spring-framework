@@ -87,6 +87,9 @@ public class XmlValidationModeDetector {
 	 * @throws IOException in case of I/O failure
 	 * @see #VALIDATION_DTD
 	 * @see #VALIDATION_XSD
+	 *
+	 *
+	 * 检测文档验证模式，开头含有 "DOCTYPE"  就是VALIDATION_DTD模式，否则就是VALIDATION_XSD模式，也是简单粗暴啊
 	 */
 	public int detectValidationMode(InputStream inputStream) throws IOException {
 		// Peek into the file to look for DOCTYPE.

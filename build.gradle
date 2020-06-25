@@ -16,7 +16,7 @@ allprojects {
 		mavenCentral()
 	}
 }
-apply from: "$rootDir/gradle/build-scan-user-data.gradle"
+//apply from: "$rootDir/gradle/build-scan-user-data.gradle"
 ext {
 	moduleProjects = subprojects.findAll { it.name.startsWith("spring-") }
 	javaProjects = subprojects - project(":framework-bom")

@@ -39,10 +39,13 @@ import org.springframework.util.StringUtils;
  */
 public class BeanDefinitionHolder implements BeanMetadataElement {
 
+	//bean定义信息
 	private final BeanDefinition beanDefinition;
 
+	//bean的名称
 	private final String beanName;
 
+	//bean的别名集合
 	@Nullable
 	private final String[] aliases;
 
