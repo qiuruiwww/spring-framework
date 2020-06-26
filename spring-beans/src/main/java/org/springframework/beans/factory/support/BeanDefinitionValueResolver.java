@@ -108,6 +108,7 @@ class BeanDefinitionValueResolver {
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
+		//对RuntimeBeanReference类型进行解析
 		if (value instanceof RuntimeBeanReference) {
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
 			return resolveReference(argName, ref);
@@ -303,6 +304,7 @@ class BeanDefinitionValueResolver {
 		try {
 			Object bean;
 			Class<?> beanType = ref.getBeanType();
+			//如果ref是在双亲ioc中，那就到双亲ioc容器中去获取
 			if (ref.isToParent()) {
 				BeanFactory parent = this.beanFactory.getParentBeanFactory();
 				if (parent == null) {
@@ -319,6 +321,7 @@ class BeanDefinitionValueResolver {
 				}
 			}
 			else {
+				//在当前ioc容器中去获取bean，这里会触发一个getbean的过程，如果依赖注入没有发生，这里会触发相应的依赖注入的发生
 				String resolvedName;
 				if (beanType != null) {
 					NamedBeanHolder<?> namedBean = this.beanFactory.resolveNamedBean(beanType);
