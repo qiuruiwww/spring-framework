@@ -859,6 +859,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 实例化所有的(non-lazy-init)单件,其实就是通过触发调用getbean来触发依赖注入
+	 * @Date 14:29 2020/6/26
+	 * @Param []
+	 * @return void
+	 **/
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isTraceEnabled()) {
@@ -874,6 +881,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
 				if (isFactoryBean(beanName)) {
+					//调用getbean来触发依赖注入
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
@@ -888,11 +896,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 									((SmartFactoryBean<?>) factory).isEagerInit());
 						}
 						if (isEagerInit) {
+							//调用getbean来触发依赖注入
 							getBean(beanName);
 						}
 					}
 				}
 				else {
+					//调用getbean来触发依赖注入
 					getBean(beanName);
 				}
 			}

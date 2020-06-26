@@ -75,6 +75,13 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 实现对aware相关接口的注入，在依赖注入，属性填充之后，bean的初始化中调用
+	 * @Date 15:32 2020/6/26
+	 * @Param [bean, beanName]
+	 * @return java.lang.Object
+	 **/
 	@Override
 	@Nullable
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -97,12 +104,20 @@ class ApplicationContextAwareProcessor implements BeanPostProcessor {
 			}, acc);
 		}
 		else {
+			//对aware相关接口的注入
 			invokeAwareInterfaces(bean);
 		}
 
 		return bean;
 	}
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 对aware相关接口的注入(ApplicationContextAware、ApplicationEventPublisherAware、ResourceLoaderAware)
+	 * @Date 15:33 2020/6/26
+	 * @Param [bean]
+	 * @return void
+	 **/
 	private void invokeAwareInterfaces(Object bean) {
 		if (bean instanceof EnvironmentAware) {
 			((EnvironmentAware) bean).setEnvironment(this.applicationContext.getEnvironment());
