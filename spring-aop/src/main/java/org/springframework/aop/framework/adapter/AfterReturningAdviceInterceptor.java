@@ -43,6 +43,8 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 	/**
 	 * Create a new AfterReturningAdviceInterceptor for the given advice.
 	 * @param advice the AfterReturningAdvice to wrap
+	 *
+	 *               为指定的advice创建对应的AfterReturningAdviceInterceptor对象
 	 */
 	public AfterReturningAdviceInterceptor(AfterReturningAdvice advice) {
 		Assert.notNull(advice, "Advice must not be null");
@@ -50,6 +52,13 @@ public class AfterReturningAdviceInterceptor implements MethodInterceptor, After
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 这个invoke方法是拦截器的回调方法，会在代理对象的方法被调用是触发回调
+	 * @Date 14:29 2020/6/27
+	 * @Param [mi]
+	 * @return java.lang.Object
+	 **/
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		Object retVal = mi.proceed();

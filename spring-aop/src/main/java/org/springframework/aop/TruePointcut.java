@@ -30,6 +30,7 @@ final class TruePointcut implements Pointcut, Serializable {
 
 	/**
 	 * Enforce Singleton pattern.
+	 * 单件模式实现特点，设置默认的私有构造函数，使其不能直接被实例化，并设置一个静态的类变量来保证该实例的唯一
 	 */
 	private TruePointcut() {
 	}

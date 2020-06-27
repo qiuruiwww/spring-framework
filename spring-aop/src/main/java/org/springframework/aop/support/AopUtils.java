@@ -340,12 +340,14 @@ public abstract class AopUtils {
 
 		// Use reflection to invoke the method.
 		try {
+			//使用反射调用target对象方法的地方
 			ReflectionUtils.makeAccessible(method);
 			return method.invoke(target, args);
 		}
 		catch (InvocationTargetException ex) {
 			// Invoked method threw a checked exception.
 			// We must rethrow it. The client won't see the interceptor.
+			//抛出aop异常，对异常进行转换
 			throw ex.getTargetException();
 		}
 		catch (IllegalArgumentException ex) {

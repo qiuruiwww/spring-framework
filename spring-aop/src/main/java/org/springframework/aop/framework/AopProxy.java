@@ -28,6 +28,8 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @see DefaultAopProxyFactory
+ *
+ * aop代理对象接口
  */
 public interface AopProxy {
 
@@ -37,6 +39,8 @@ public interface AopProxy {
 	 * usually, the thread context class loader.
 	 * @return the new proxy object (never {@code null})
 	 * @see Thread#getContextClassLoader()
+	 *
+	 * 得到代理对象
 	 */
 	Object getProxy();
 
@@ -49,6 +53,8 @@ public interface AopProxy {
 	 * @param classLoader the class loader to create the proxy with
 	 * (or {@code null} for the low-level proxy facility's default)
 	 * @return the new proxy object (never {@code null})
+	 *
+	 * 根据ClassLoader 得到代理对象
 	 */
 	Object getProxy(@Nullable ClassLoader classLoader);
 

@@ -150,6 +150,13 @@ class CglibAopProxy implements AopProxy, Serializable {
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description cglib生成代理对象
+	 * @Date 13:05 2020/6/27
+	 * @Param []
+	 * @return java.lang.Object
+	 **/
 	@Override
 	public Object getProxy() {
 		return getProxy(null);
@@ -162,6 +169,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 		}
 
 		try {
+			//从advised中取得ioc容器中配置的target对象
 			Class<?> rootClass = this.advised.getTargetClass();
 			Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
 
@@ -218,6 +226,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 	protected Object createProxyClassAndInstance(Enhancer enhancer, Callback[] callbacks) {
 		enhancer.setInterceptDuringConstruction(false);
 		enhancer.setCallbacks(callbacks);
+		//生成代理对象
 		return (this.constructorArgs != null && this.constructorArgTypes != null ?
 				enhancer.create(this.constructorArgTypes, this.constructorArgs) :
 				enhancer.create());
@@ -658,6 +667,13 @@ class CglibAopProxy implements AopProxy, Serializable {
 			this.advised = advised;
 		}
 
+		/**
+		 * @Author Qiu Rui
+		 * @Description cglib回调
+		 * @Date 13:16 2020/6/27
+		 * @Param [proxy, method, args, methodProxy]
+		 * @return java.lang.Object
+		 **/
 		@Override
 		@Nullable
 		public Object intercept(Object proxy, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
@@ -674,6 +690,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
+				//从advised中取得配置好的aop拦截器链
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
@@ -683,11 +700,14 @@ class CglibAopProxy implements AopProxy, Serializable {
 					// Note that the final invoker must be an InvokerInterceptor, so we know
 					// it does nothing but a reflective operation on the target, and no hot
 					// swapping or fancy proxying.
+
+					//如果没有拦截器链的配置，直接调用target对象的调用方法
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 					retVal = methodProxy.invoke(target, argsToUse);
 				}
 				else {
 					// We need to create a method invocation...
+					//通过CglibMethodInvocation来启动advice通知
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
 				retVal = processReturnType(proxy, target, method, retVal);

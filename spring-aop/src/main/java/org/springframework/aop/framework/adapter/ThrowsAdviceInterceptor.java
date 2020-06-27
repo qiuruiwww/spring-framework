@@ -76,6 +76,7 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 		Assert.notNull(throwsAdvice, "Advice must not be null");
 		this.throwsAdvice = throwsAdvice;
 
+		//配置ThrowsAdvice的回调方法
 		Method[] methods = throwsAdvice.getClass().getMethods();
 		for (Method method : methods) {
 			if (method.getName().equals(AFTER_THROWING) &&
@@ -83,6 +84,7 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 				Class<?> throwableParam = method.getParameterTypes()[method.getParameterCount() - 1];
 				if (Throwable.class.isAssignableFrom(throwableParam)) {
 					// An exception handler to register...
+					//配置异常处理
 					this.exceptionHandlerMap.put(throwableParam, method);
 					if (logger.isDebugEnabled()) {
 						logger.debug("Found exception handler method on throws advice: " + method);
@@ -106,8 +108,16 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 这个invoke方法是拦截器的回调方法，会在代理对象的方法被调用是触发回调
+	 * @Date 14:30 2020/6/27
+	 * @Param [mi]
+	 * @return java.lang.Object
+	 **/
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		//把对目标对象的调用放入try/catch中，并在catch中触发ThrowsAdvice的回调，把异常接着向外抛出，不做过多的处理
 		try {
 			return mi.proceed();
 		}
@@ -142,6 +152,13 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 		return handler;
 	}
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 通过反射启动对ThrowsAdvice回调方法的调用
+	 * @Date 14:33 2020/6/27
+	 * @Param [mi, ex, method]
+	 * @return void
+	 **/
 	private void invokeHandlerMethod(MethodInvocation mi, Throwable ex, Method method) throws Throwable {
 		Object[] handlerArgs;
 		if (method.getParameterCount() == 1) {

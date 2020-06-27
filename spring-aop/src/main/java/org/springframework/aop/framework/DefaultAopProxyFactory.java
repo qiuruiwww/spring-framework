@@ -46,6 +46,13 @@ import org.springframework.aop.SpringProxy;
 @SuppressWarnings("serial")
 public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 生成AopProxy代理对象，需要判断是jdk还是cglib方式
+	 * @Date 12:53 2020/6/27
+	 * @Param [config]
+	 * @return org.springframework.aop.framework.AopProxy
+	 **/
 	@Override
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
 		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {
@@ -54,9 +61,11 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 				throw new AopConfigException("TargetSource cannot determine target class: " +
 						"Either an interface or a target is required for proxy creation.");
 			}
+			//如果targetclass是接口类，使用jdk方式来生成
 			if (targetClass.isInterface() || Proxy.isProxyClass(targetClass)) {
 				return new JdkDynamicAopProxy(config);
 			}
+			//如果不是接口类，使用cglib方式来生成
 			return new ObjenesisCglibAopProxy(config);
 		}
 		else {

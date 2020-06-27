@@ -155,34 +155,49 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 拦截器链的调用
+	 * @Date 13:36 2020/6/27
+	 * @Param []
+	 * @return java.lang.Object
+	 **/
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
 		// We start with an index of -1 and increment early.
+		//从索引为-1 的拦截器开始调用，并按照序递增，如果拦截器链中的拦截器迭代调用完毕，这里开始调用target的函数，
+		// 这个函数是通过反射机制调用的
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
 			return invokeJoinpoint();
 		}
 
+		//这里沿着定义好的interceptorOrInterceptionAdvice链进行处理
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
+			//这里是对拦截器进行动态匹配的判断，匹配切点，这里是触发切点匹配的地方，如果和pointcut匹配，name这个advice将会得到执行（matches）
 			InterceptorAndDynamicMethodMatcher dm =
 					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			Class<?> targetClass = (this.targetClass != null ? this.targetClass : this.method.getDeclaringClass());
+			//匹配切点
 			if (dm.methodMatcher.matches(this.method, targetClass, this.arguments)) {
+				//这里是拦截器增强的地方，前置通知增强，后置通知增强，异常通知增强
 				return dm.interceptor.invoke(this);
 			}
 			else {
 				// Dynamic matching failed.
 				// Skip this interceptor and invoke the next in the chain.
+				//如果不匹配，那么proceed会递归调用，直到所有的拦截器都被运行过为止
 				return proceed();
 			}
 		}
 		else {
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
+			//如果是一个Interceptor，直接调用这个Interceptor的对应的方法
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}
