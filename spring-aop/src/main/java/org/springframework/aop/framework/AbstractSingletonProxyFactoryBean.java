@@ -139,6 +139,7 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 
 	@Override
 	public void afterPropertiesSet() {
+		//必须配置target属性，同时需要target是一个bean reference
 		if (this.target == null) {
 			throw new IllegalArgumentException("Property 'target' is required");
 		}
@@ -149,6 +150,8 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 			this.proxyClassLoader = ClassUtils.getDefaultClassLoader();
 		}
 
+		//使用ProxyFactory完成AOP的基本功能
+		//这个ProxyFactory提供proxy对象，并将TransactionInterceptor设置为target方法调用的拦截器
 		ProxyFactory proxyFactory = new ProxyFactory();
 
 		if (this.preInterceptors != null) {
@@ -158,6 +161,8 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 		}
 
 		// Add the main interceptor (typically an Advisor).
+		//这里是spring加入通知器的地方，可以加入两种通知器，defaultpointcutadvicor和transactionattributesourceadvisor
+		//调用createMainInterceptor来生成需要的advisors
 		proxyFactory.addAdvisor(this.advisorAdapterRegistry.wrap(createMainInterceptor()));
 
 		if (this.postInterceptors != null) {
@@ -168,6 +173,7 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 
 		proxyFactory.copyFrom(this);
 
+		//创建aop目标源，与在其他地方使用proxyfactory没有差别
 		TargetSource targetSource = createTargetSource(this.target);
 		proxyFactory.setTargetSource(targetSource);
 
@@ -178,12 +184,14 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 			// Rely on AOP infrastructure to tell us what interfaces to proxy.
 			Class<?> targetClass = targetSource.getTargetClass();
 			if (targetClass != null) {
+				//需要根据aop基础实施来确定使用哪个接口作为代理
 				proxyFactory.setInterfaces(ClassUtils.getAllInterfacesForClass(targetClass, this.proxyClassLoader));
 			}
 		}
 
 		postProcessProxyFactory(proxyFactory);
 
+		//设置代理对象
 		this.proxy = proxyFactory.getProxy(this.proxyClassLoader);
 	}
 
@@ -212,6 +220,14 @@ public abstract class AbstractSingletonProxyFactoryBean extends ProxyConfig
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 返回的是一个proxy，这个proxy是proxyfactory生成的aop代理，
+	 *             已经封装了对事物处理的拦截器配置，是通过方法afterPropertiesSet()生成的
+	 * @Date 16:58 2020/6/27
+	 * @Param []
+	 * @return java.lang.Object
+	 **/
 	@Override
 	public Object getObject() {
 		if (this.proxy == null) {

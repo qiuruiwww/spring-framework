@@ -84,6 +84,13 @@ abstract class TransactionAttributeSourcePointcut extends StaticMethodMatcherPoi
 	 */
 	private class TransactionAttributeSourceClassFilter implements ClassFilter {
 
+		/**
+		 * @Author Qiu Rui
+		 * @Description 事务切点匹配方法，通过是否返回TransactionAttributeSource来判断是否是事务方法，返回null则不是事务方法
+		 * @Date 16:45 2020/6/27
+		 * @Param [clazz]
+		 * @return boolean
+		 **/
 		@Override
 		public boolean matches(Class<?> clazz) {
 			if (TransactionalProxy.class.isAssignableFrom(clazz) ||

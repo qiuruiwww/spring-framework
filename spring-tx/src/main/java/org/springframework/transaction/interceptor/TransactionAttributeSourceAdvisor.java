@@ -44,6 +44,13 @@ public class TransactionAttributeSourceAdvisor extends AbstractPointcutAdvisor {
 	private TransactionInterceptor transactionInterceptor;
 
 	private final TransactionAttributeSourcePointcut pointcut = new TransactionAttributeSourcePointcut() {
+		/**
+		 * @Author Qiu Rui
+		 * @Description 通过TransactionInterceptor来得到事务的配置属性
+		 * @Date 16:43 2020/6/27
+		 * @Param []
+		 * @return org.springframework.transaction.interceptor.TransactionAttributeSource
+		 **/
 		@Override
 		@Nullable
 		protected TransactionAttributeSource getTransactionAttributeSource() {

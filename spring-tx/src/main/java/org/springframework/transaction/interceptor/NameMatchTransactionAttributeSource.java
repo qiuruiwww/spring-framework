@@ -70,6 +70,8 @@ public class NameMatchTransactionAttributeSource implements TransactionAttribute
 	 * parsable into TransactionAttribute instances via TransactionAttributeEditor.
 	 * @see #setNameMap
 	 * @see TransactionAttributeEditor
+	 *
+	 * 设置配置的事物方法
 	 */
 	public void setProperties(Properties transactionAttributes) {
 		TransactionAttributeEditor tae = new TransactionAttributeEditor();
@@ -98,6 +100,13 @@ public class NameMatchTransactionAttributeSource implements TransactionAttribute
 	}
 
 
+	/**
+	 * @Author Qiu Rui
+	 * @Description 对调用方法进行判断，判断是否是事务方法，如果是事务方法，那么取出相应的事物配置属性
+	 * @Date 16:52 2020/6/27
+	 * @Param [method, targetClass]
+	 * @return org.springframework.transaction.interceptor.TransactionAttribute
+	 **/
 	@Override
 	@Nullable
 	public TransactionAttribute getTransactionAttribute(Method method, @Nullable Class<?> targetClass) {
@@ -106,9 +115,11 @@ public class NameMatchTransactionAttributeSource implements TransactionAttribute
 		}
 
 		// Look for direct name match.
+		//判断当前目标调用的方法与配置的事物方法是否直接匹配
 		String methodName = method.getName();
 		TransactionAttribute attr = this.nameMap.get(methodName);
 
+		//如果不匹配，就通过调用patternmatchutils的simpleMatch方法来进行匹配判断
 		if (attr == null) {
 			// Look for most specific name match.
 			String bestNameMatch = null;
@@ -132,6 +143,9 @@ public class NameMatchTransactionAttributeSource implements TransactionAttribute
 	 * @param mappedName the name in the descriptor
 	 * @return if the names match
 	 * @see org.springframework.util.PatternMatchUtils#simpleMatch(String, String)
+	 *
+	 *
+	 * 通过调用patternmatchutils的方法来进行匹配判断
 	 */
 	protected boolean isMatch(String methodName, String mappedName) {
 		return PatternMatchUtils.simpleMatch(mappedName, methodName);

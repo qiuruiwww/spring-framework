@@ -115,6 +115,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBean
 		implements BeanFactoryAware {
 
+	//这个拦截器TransactionInterceptor通过AOP发挥作用，通着这个拦截器的实现，spring封装了事物处理的实现
 	private final TransactionInterceptor transactionInterceptor = new TransactionInterceptor();
 
 	@Nullable
@@ -125,6 +126,8 @@ public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBe
 	 * Set the default transaction manager. This will perform actual
 	 * transaction management: This class is just a way of invoking it.
 	 * @see TransactionInterceptor#setTransactionManager
+	 *
+	 * 依赖注入具体的事物管理器
 	 */
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionInterceptor.setTransactionManager(transactionManager);
@@ -142,6 +145,8 @@ public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBe
 	 * @see TransactionInterceptor#setTransactionAttributes
 	 * @see TransactionAttributeEditor
 	 * @see NameMatchTransactionAttributeSource
+	 *
+	 * 通过依赖注入的事物属性以Properties的形式存在，把从beandefinition中读到的事物管理信息注入到transactionInterceptor中
 	 */
 	public void setTransactionAttributes(Properties transactionAttributes) {
 		this.transactionInterceptor.setTransactionAttributes(transactionAttributes);
@@ -188,15 +193,19 @@ public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBe
 
 	/**
 	 * Creates an advisor for this FactoryBean's TransactionInterceptor.
+	 *
+	 * 创建spring AOP对事物处理的advicor
 	 */
 	@Override
 	protected Object createMainInterceptor() {
 		this.transactionInterceptor.afterPropertiesSet();
 		if (this.pointcut != null) {
+			//使用默认的通知器DefaultPointcutAdvisor，并未通知器配置事物处理拦截器
 			return new DefaultPointcutAdvisor(this.pointcut, this.transactionInterceptor);
 		}
 		else {
 			// Rely on default pointcut.
+			//如果没有配置pointcut，使用TransactionAttributeSourceAdvisor最为通知器，并为通知器设置拦截器
 			return new TransactionAttributeSourceAdvisor(this.transactionInterceptor);
 		}
 	}
