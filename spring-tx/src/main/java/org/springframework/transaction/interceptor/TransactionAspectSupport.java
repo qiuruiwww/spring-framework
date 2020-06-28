@@ -658,6 +658,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			if (logger.isTraceEnabled()) {
 				logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() + "]");
 			}
+			//调用具体的事务管理器来完成事务提交
 			txInfo.getTransactionManager().commit(txInfo.getTransactionStatus());
 		}
 	}

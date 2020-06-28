@@ -708,19 +708,24 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 * @see org.springframework.transaction.TransactionStatus#isRollbackOnly()
 	 * @see #doCommit
 	 * @see #rollback
+	 *
+	 * 魔板方法事务提交
 	 */
 	@Override
 	public final void commit(TransactionStatus status) throws TransactionException {
+		//在transactionstatus中标识事务已经结束
 		if (status.isCompleted()) {
 			throw new IllegalTransactionStateException(
 					"Transaction is already completed - do not call commit or rollback more than once per transaction");
 		}
 
 		DefaultTransactionStatus defStatus = (DefaultTransactionStatus) status;
+		//事务处理过程中出现异常，则触发事务回滚
 		if (defStatus.isLocalRollbackOnly()) {
 			if (defStatus.isDebug()) {
 				logger.debug("Transactional code has requested rollback");
 			}
+			//处理事务回滚
 			processRollback(defStatus, false);
 			return;
 		}
@@ -729,10 +734,12 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			if (defStatus.isDebug()) {
 				logger.debug("Global transaction is marked as rollback-only but transactional code requested commit");
 			}
+			//处理事务回滚
 			processRollback(defStatus, true);
 			return;
 		}
 
+		//处理事务提交
 		processCommit(defStatus);
 	}
 
@@ -741,6 +748,9 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 * Rollback-only flags have already been checked and applied.
 	 * @param status object representing the transaction
 	 * @throws TransactionException in case of commit failure
+	 *
+	 *
+	 * 事务提交
 	 */
 	private void processCommit(DefaultTransactionStatus status) throws TransactionException {
 		try {
@@ -748,11 +758,13 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 
 			try {
 				boolean unexpectedRollback = false;
+				//事务提交的准备工作由具体的事务管理器完成
 				prepareForCommit(status);
 				triggerBeforeCommit(status);
 				triggerBeforeCompletion(status);
 				beforeCompletionInvoked = true;
 
+				//嵌套事务的处理
 				if (status.hasSavepoint()) {
 					if (status.isDebug()) {
 						logger.debug("Releasing transaction savepoint");
@@ -760,11 +772,14 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 					unexpectedRollback = status.isGlobalRollbackOnly();
 					status.releaseHeldSavepoint();
 				}
+				//根据当前线程中保存的事务状态进行处理，如果当前的事务是一个新事务，调用具体的事务处理器的完成提交，
+				// 如果当前锁持有的事务不是一个新事务，则不提交，由已经存在的事务来完成提交
 				else if (status.isNewTransaction()) {
 					if (status.isDebug()) {
 						logger.debug("Initiating transaction commit");
 					}
 					unexpectedRollback = status.isGlobalRollbackOnly();
+					//调用具体的事务管理器实现事务真正提交
 					doCommit(status);
 				}
 				else if (isFailEarlyOnGlobalRollbackOnly()) {
@@ -847,20 +862,24 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			try {
 				triggerBeforeCompletion(status);
 
+				//嵌套事务的回滚处理
 				if (status.hasSavepoint()) {
 					if (status.isDebug()) {
 						logger.debug("Rolling back transaction to savepoint");
 					}
 					status.rollbackToHeldSavepoint();
 				}
+				//当前事务调用方法中新建事务的回滚处理
 				else if (status.isNewTransaction()) {
 					if (status.isDebug()) {
 						logger.debug("Initiating transaction rollback");
 					}
+					//具体的事务管理器实现的回滚方法
 					doRollback(status);
 				}
 				else {
 					// Participating in larger transaction
+					//如果在当前事务调用方法中没有新建事务的回滚处理
 					if (status.hasTransaction()) {
 						if (status.isLocalRollbackOnly() || isGlobalRollbackOnParticipationFailure()) {
 							if (status.isDebug()) {
