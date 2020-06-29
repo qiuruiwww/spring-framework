@@ -517,6 +517,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	/**
 	 * Overridden method of {@link HttpServletBean}, invoked after any bean properties
 	 * have been set. Creates this servlet's WebApplicationContext.
+	 *
+	 * 完成具体的初始化过程
 	 */
 	@Override
 	protected final void initServletBean() throws ServletException {
@@ -527,6 +529,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		long startTime = System.currentTimeMillis();
 
 		try {
+			//初始化上下文
 			this.webApplicationContext = initWebApplicationContext();
 			initFrameworkServlet();
 		}
@@ -558,6 +561,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextConfigLocation
 	 */
 	protected WebApplicationContext initWebApplicationContext() {
+		//调用静态类来获取根上下文，这个上下文保存在servletcontext中
+		//使用这个根上下文作为当前MVC上下文的双亲上下文
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
 		WebApplicationContext wac = null;
@@ -596,12 +601,14 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// support or the context injected at construction time had already been
 			// refreshed -> trigger initial onRefresh manually here.
 			synchronized (this.onRefreshMonitor) {
+				//初始化
 				onRefresh(wac);
 			}
 		}
 
 		if (this.publishContext) {
 			// Publish the context as a servlet context attribute.
+			//把当前建立的上下文保存到servletContext中去
 			String attrName = getServletContextAttributeName();
 			getServletContext().setAttribute(attrName, wac);
 		}
@@ -660,6 +667,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 				(ConfigurableWebApplicationContext) BeanUtils.instantiateClass(contextClass);
 
 		wac.setEnvironment(getEnvironment());
+		//这里配置的双亲上下文就是contextloader中建立的根上下文
 		wac.setParent(parent);
 		String configLocation = getContextConfigLocation();
 		if (configLocation != null) {
@@ -684,6 +692,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			}
 		}
 
+		//设置ServletContext的引用和其他相关的配置信息
 		wac.setServletContext(getServletContext());
 		wac.setServletConfig(getServletConfig());
 		wac.setNamespace(getNamespace());
@@ -699,6 +708,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		postProcessWebApplicationContext(wac);
 		applyInitializers(wac);
+		//通过refresh来调用容器的初始化过程
 		wac.refresh();
 	}
 

@@ -58,6 +58,7 @@ import org.springframework.util.CollectionUtils;
  */
 public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 
+	//URL请求和控制器的映射关系
 	private final Map<String, Object> urlMap = new LinkedHashMap<>();
 
 
@@ -150,6 +151,7 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 			logger.trace("No patterns in " + formatMappingName());
 		}
 		else {
+			//对bean的配置进行解析，调用基类的registerhandler完成注册
 			urlMap.forEach((url, handler) -> {
 				// Prepend with slash if not already present.
 				if (!url.startsWith("/")) {

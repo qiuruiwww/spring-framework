@@ -127,6 +127,8 @@ public class JstlView extends InternalResourceView {
 	/**
 	 * Exposes a JSTL LocalizationContext for Spring's locale and MessageSource.
 	 * @see JstlUtils#exposeLocalizationContext
+	 *
+	 * 数据处理
 	 */
 	@Override
 	protected void exposeHelpers(HttpServletRequest request) throws Exception {

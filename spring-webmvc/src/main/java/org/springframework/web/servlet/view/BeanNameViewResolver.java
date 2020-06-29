@@ -88,6 +88,7 @@ public class BeanNameViewResolver extends WebApplicationObjectSupport implements
 			// let's accept this as a non-match and allow for chaining as well...
 			return null;
 		}
+		//通过视图名称取得对应的视图对象
 		return context.getBean(viewName, View.class);
 	}
 
