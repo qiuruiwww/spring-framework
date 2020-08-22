@@ -64,12 +64,15 @@ class SimpleCommandLineArgsParser {
 	 * @param args command line arguments, typically from a {@code main()} method
 	 */
 	public CommandLineArgs parse(String... args) {
+		//解析args参数，返回一个完整的CommandLineArgs对象
 		CommandLineArgs commandLineArgs = new CommandLineArgs();
 		for (String arg : args) {
+			//解析选项参数，以"--"开头
 			if (arg.startsWith("--")) {
 				String optionText = arg.substring(2);
 				String optionName;
 				String optionValue = null;
+				//判断是--foo=bar参数格式还是-foo参数格式，并分别处理获取值
 				int indexOfEqualsSign = optionText.indexOf('=');
 				if (indexOfEqualsSign > -1) {
 					optionName = optionText.substring(0, indexOfEqualsSign);
@@ -84,6 +87,7 @@ class SimpleCommandLineArgsParser {
 				commandLineArgs.addOptionArg(optionName, optionValue);
 			}
 			else {
+				//处理非选项参数
 				commandLineArgs.addNonOptionArg(arg);
 			}
 		}

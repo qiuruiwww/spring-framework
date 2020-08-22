@@ -61,8 +61,10 @@ public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	//参数类别名称(commandLineArgs)
 	protected final String name;
 
+	//参数封装类 CommandLineArgs对象
 	protected final T source;
 
 
