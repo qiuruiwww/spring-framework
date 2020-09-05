@@ -54,6 +54,7 @@ import org.springframework.web.servlet.ViewResolver;
  */
 public class BeanNameViewResolver extends WebApplicationObjectSupport implements ViewResolver, Ordered {
 
+	//上线ordered接口，支持对viewresolver排序，值越小优先级越高
 	private int order = Ordered.LOWEST_PRECEDENCE;  // default: same as non-Ordered
 
 
@@ -75,11 +76,14 @@ public class BeanNameViewResolver extends WebApplicationObjectSupport implements
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws BeansException {
+		//获取上下文
 		ApplicationContext context = obtainApplicationContext();
+		//查找上下文中是否含有viewName的bean定义
 		if (!context.containsBean(viewName)) {
 			// Allow for ViewResolver chaining...
 			return null;
 		}
+		//判断viewName的bean对象是否是view类型
 		if (!context.isTypeMatch(viewName, View.class)) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Found bean named '" + viewName + "' but it does not implement View");
