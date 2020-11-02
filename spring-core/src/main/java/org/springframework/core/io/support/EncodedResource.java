@@ -136,6 +136,7 @@ public class EncodedResource implements InputStreamSource {
 	 * @see #getInputStream()
 	 */
 	public Reader getReader() throws IOException {
+		//使用相应的编码作为输入流的编码
 		if (this.charset != null) {
 			return new InputStreamReader(this.resource.getInputStream(), this.charset);
 		}
